@@ -18,18 +18,18 @@
     </script>
     
     <nav>
-      <a href="/">Home</a>
-      <a href="/races">Races</a>
-      <a href="/predictions">My Predictions</a>
-      {#if $user}
-        <button on:click={handleLogout}>Logout</button>
-      {:else}
-        <a href="/auth">Login</a>
-      {/if}
+        <a href="/">Home</a>
+        <a href="/races">Races</a>
+        <a href="/predictions">My Predictions</a>
+        {#if $user}
+          <button on:click={handleLogout}>Logout</button>
+        {:else}
+          <a href="/auth">Login</a>
+        {/if}
     </nav>
-    
+      
     <main>
-      <slot />
+        <slot />
     </main>
     
     <style>

@@ -46,65 +46,66 @@
     }
     
     async function submitPrediction() {
-      try {
+        try {
         const { data: { user: currentUser } } = await supabase.auth.getUser();
         
         if (!currentUser) {
-          throw new Error('User not authenticated');
+            throw new Error('User not authenticated');
         }
-    
+
         // Check if the user exists in the users table
-        const { data: existingUser, error: userCheckError } = await supabase
-          .from('users')
-          .select('id')
-          .eq('id', currentUser.id)
-          .single();
-    
+        const { data: existingUsers, error: userCheckError } = await supabase
+            .from('users')
+            .select('id')
+            .eq('id', currentUser.id);
+
         if (userCheckError) {
-          console.error('Error checking user:', userCheckError);
-          throw userCheckError;
+            console.error('Error checking user:', userCheckError);
+            throw userCheckError;
         }
-    
+
         // If the user doesn't exist in the users table, insert them
-        if (!existingUser) {
-          const { error: insertError } = await supabase
+        if (!existingUsers || existingUsers.length === 0) {
+            const { error: insertError } = await supabase
             .from('users')
             .insert({
-              id: currentUser.id,
-              email: currentUser.email,
-              name: currentUser.user_metadata?.full_name || currentUser.email
+                id: currentUser.id,
+                email: currentUser.email,
+                name: currentUser.user_metadata?.full_name || currentUser.email
             });
-    
-          if (insertError) {
+
+            if (insertError) {
             console.error('Error inserting user:', insertError);
             throw insertError;
-          }
+            }
         }
-    
+
         if (!race || !drivers.length) {
-          throw new Error('Race or drivers data is missing');
+            throw new Error('Race or drivers data is missing');
         }
-    
+
         const prediction = {
-          race_id: race.id,
-          user_id: currentUser.id,
-          driver_order: drivers.map(d => d.id)
+            race_id: race.id,
+            user_id: currentUser.id,
+            driver_order: drivers.map(d => d.id)
         };
-    
-        const { error: predictionError } = await supabase.from('predictions').upsert(prediction);
-    
+
+        const { error: predictionError } = await supabase
+            .from('predictions')
+            .insert(prediction);
+
         if (predictionError) {
-          console.error('Error submitting prediction:', predictionError);
-          throw predictionError;
+            console.error('Error submitting prediction:', predictionError);
+            throw predictionError;
         }
-    
+
         alert('Prediction submitted successfully!');
-      } catch (error) {
+        } catch (error) {
         console.error('Error:', error);
         alert(`Error submitting prediction: ${error.message}`);
-      }
+        }
     }
-    </script>
+</script>
     
     <h1>Make Prediction for {race?.name || 'Loading...'}</h1>
     

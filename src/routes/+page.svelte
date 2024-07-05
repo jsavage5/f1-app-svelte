@@ -4,8 +4,5 @@
 </script>
 
 <h1>Welcome to Supabase!</h1>
-<ul>
-	{#each drivers as driver}
-		<li>{driver.first_name}</li>
-	{/each}
-</ul>
+
+<h2>Let get sexy and predict some stuff!</h2>
